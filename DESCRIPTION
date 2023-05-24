@@ -1,0 +1,22 @@
+Package: driftR
+Type: Package
+Title: Tools and Examples for Fitting (Hierarchical) Drift Diffusion Models in R
+Version: 0.1.0
+Authors@R:
+    c(person(given = "Dominique",
+             family = "Makowski",
+             role = c("aut", "cre"),
+             email = "dom.makowski@gmail.com",
+             comment = c(ORCID = "0000-0001-5375-9967", Twitter = "@Dom_Makowski")))
+Maintainer: Dominique Makowski <D.Makowski@sussex.ac.uk>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+Imports:
+    rtdists,
+    rlang,
+    ggplot2,
+    patchwork
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
