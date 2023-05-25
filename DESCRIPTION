@@ -1,4 +1,4 @@
-Package: driftR
+Package: easyRT
 Type: Package
 Title: Tools and Examples for Fitting (Hierarchical) Drift Diffusion Models in R
 Version: 0.1.0

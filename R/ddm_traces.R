@@ -14,7 +14,7 @@
 #' data_traces
 #'
 #' @importFrom rlang .data
-#' @importFrom stats rnorm
+#' @importFrom stats rnorm runif
 #' @importFrom utils head
 #' @export
 ddm_traces <- function(n_traces=5, time_max=2, step=0.01, drift = 0, bs = 1, bias = 0.5, ndt = 0.2, ndt_var = 0.1, ...) {
