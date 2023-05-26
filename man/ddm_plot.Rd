@@ -9,14 +9,30 @@
 \usage{
 ddm_plot(data, ...)
 
-ddm_plot_upper(data, density = NULL, xlim = c(0, 2), theme = "default", ...)
+ddm_plot_upper(
+  data,
+  density = NULL,
+  xlim = c(0, 2),
+  hist_alpha = 1/3,
+  density_linewidth = 1,
+  theme = "default",
+  ...
+)
 
-ddm_plot_lower(data, density = NULL, xlim = c(0, 2), theme = "default", ...)
+ddm_plot_lower(
+  data,
+  density = NULL,
+  xlim = c(0, 2),
+  hist_alpha = 1/3,
+  density_linewidth = 1,
+  theme = "default",
+  ...
+)
 
 ddm_plot_traces(
   traces,
-  alpha = 0.8,
-  linewidth = 0.5,
+  trace_alpha = 0.8,
+  trace_linewidth = 0.5,
   xlim = c(0, 2),
   theme = "default",
   ...
@@ -30,11 +46,15 @@ columns "rt", "response" (lower or upper) and "condition".}
 
 \item{density}{Data for density lines (typically obtained from \code{\link{ddm_data}()}).}
 
-\item{xlim, linewidth, alpha}{Aesthetic parameters.}
+\item{xlim}{X-axis limits.}
 
 \item{theme}{Can be \code{NULL} (useful for customizing) or "default".}
 
 \item{traces}{Data for trace lines (typically obtained from \code{\link{ddm_data}()}).}
+
+\item{trace_alpha, hist_alpha}{Alpha of trace lines or histograms.}
+
+\item{trace_linewidth, density_linewidth}{Alpha of trace lines or histograms.}
 }
 \description{
 Plot data.

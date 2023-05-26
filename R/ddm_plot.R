@@ -6,8 +6,10 @@
 #'   columns "rt", "response" (lower or upper) and "condition".
 #' @param density Data for density lines (typically obtained from \code{\link{ddm_data}()}).
 #' @param traces Data for trace lines (typically obtained from \code{\link{ddm_data}()}).
-#' @param xlim,linewidth,alpha Aesthetic parameters.
+#' @param xlim X-axis limits.
 #' @param theme Can be \code{NULL} (useful for customizing) or "default".
+#' @param trace_alpha,hist_alpha Alpha of trace lines or histograms.
+#' @param trace_linewidth,density_linewidth Alpha of trace lines or histograms.
 #' @param ... Other arguments to pass to other functions, such as additional controls to \code{\link[graphics]{hist}()}.
 #'
 #' @examples
@@ -62,19 +64,19 @@ ddm_plot.data.frame <- function(data, density = NULL, traces = NULL, xlim = c(0,
 
 #' @rdname ddm_plot
 #' @export
-ddm_plot_upper <- function(data, density = NULL, xlim = c(0, 2), theme = "default", ...) {
-  .ddm_plot_distributions(data, side = "upper", density = density,  xlim = xlim, theme = theme, ...)
+ddm_plot_upper <- function(data, density = NULL, xlim = c(0, 2), hist_alpha = 1/3, density_linewidth = 1, theme = "default", ...) {
+  .ddm_plot_distributions(data, side = "upper", density = density, xlim = xlim, hist_alpha = hist_alpha, density_linewidth = density_linewidth, theme = theme, ...)
 }
 
 #' @rdname ddm_plot
 #' @export
-ddm_plot_lower <- function(data, density = NULL, xlim = c(0, 2), theme = "default", ...) {
-  .ddm_plot_distributions(data, side = "lower", density = density,  xlim = xlim, theme = theme, ...)
+ddm_plot_lower <- function(data, density = NULL, xlim = c(0, 2), hist_alpha = 1/3, density_linewidth = 1, theme = "default", ...) {
+  .ddm_plot_distributions(data, side = "lower", density = density,  xlim = xlim, hist_alpha = hist_alpha, density_linewidth = density_linewidth, theme = theme, ...)
 }
 
-#' @importFrom ggplot2 ggplot geom_rect aes scale_y_continuous labs coord_cartesian geom_line theme_minimal element_blank
+#' @importFrom ggplot2 ggplot geom_rect aes scale_y_continuous labs coord_cartesian geom_line theme_minimal element_blank theme
 #' @keywords internal
-.ddm_plot_distributions <- function(data, side = "upper", density = NULL, xlim = c(0, 2), theme = "default", ...) {
+.ddm_plot_distributions <- function(data, side = "upper", density = NULL, xlim = c(0, 2), hist_alpha = 1/3, density_linewidth = 1, theme = "default", ...) {
 
   # Histograms
   if(!all(c("breaks", "xmin", "counts") %in% names(data))) {
@@ -88,8 +90,8 @@ ddm_plot_lower <- function(data, density = NULL, xlim = c(0, 2), theme = "defaul
       xmax =  .data$breaks,
       ymin = 0, ymax =  .data$counts,
       fill =  .data$condition
-    ), alpha = 1 / 3) +
-    scale_y_continuous(expand = c(0, 0))
+    ), alpha = hist_alpha) +
+    scale_y_continuous(expand = c(0.01, 0.01))
 
   if(side == "upper") {
     p <- p +
@@ -102,6 +104,8 @@ ddm_plot_lower <- function(data, density = NULL, xlim = c(0, 2), theme = "defaul
   }
 
   # Density plots
+
+  # Normalize the density line to the histogram height
   if (!is.null(density)) {
     for (c in unique(data$condition)) {
       for (r in unique(data$response)) {
@@ -109,11 +113,10 @@ ddm_plot_lower <- function(data, density = NULL, xlim = c(0, 2), theme = "defaul
         density[density$condition == c & density$response == r, "y"] <- y * max(data[data$condition == c & data$response == r, "counts"])
       }
     }
-
     p <- p +
       geom_line(data = density[density$response == side, ],
                 aes(x = .data$x, y = .data$y, color = .data$condition),
-                linewidth = 1)
+                linewidth = density_linewidth)
   }
 
   # Add theme
@@ -162,7 +165,7 @@ ddm_plot_lower <- function(data, density = NULL, xlim = c(0, 2), theme = "defaul
   breaks <- hist(data[[rt]], plot = FALSE, breaks = breaks)$breaks
 
   data_hist <- data.frame()
-  for (c in unique(data$condition)) {
+  for (c in levels(data$condition)) {
     for (r in unique(data$response)) {
       dat <- data[data$condition == c & data$response == r, ]
       z <- graphics::hist(dat[[rt]], plot = FALSE, breaks = breaks)
@@ -182,6 +185,8 @@ ddm_plot_lower <- function(data, density = NULL, xlim = c(0, 2), theme = "defaul
   data_hist$response <- as.factor(data_hist[[response]])
   data_hist$xmax <- max(data[[rt]])
   levels(data_hist$response) <- rev(levels(data_hist$response))
+  # Reorder levels to same as original
+  data_hist$condition <- factor(data_hist$condition, levels=levels(data$condition))
   data_hist
 }
 
@@ -193,7 +198,7 @@ ddm_plot_lower <- function(data, density = NULL, xlim = c(0, 2), theme = "defaul
 #' @importFrom ggplot2 geom_path
 #' @rdname ddm_plot
 #' @export
-ddm_plot_traces <- function(traces, alpha = 0.8, linewidth = 0.5, xlim = c(0, 2), theme = "default", ...) {
+ddm_plot_traces <- function(traces, trace_alpha = 0.8, trace_linewidth = 0.5, xlim = c(0, 2), theme = "default", ...) {
 
   # Normalize boundaries for each condition
   for(c in unique(traces$condition)) {
@@ -211,7 +216,7 @@ ddm_plot_traces <- function(traces, alpha = 0.8, linewidth = 0.5, xlim = c(0, 2)
 
   p <- data |>
     ggplot(aes(x = .data$x, y = .data$y, color = .data$condition, group = .data$group)) +
-    geom_path(alpha = alpha, linewidth = linewidth) +
+    geom_path(alpha = trace_alpha, linewidth = trace_linewidth) +
     scale_y_continuous(expand = c(0, 0)) +
     labs(y = "Evidence", x = "rt") +
     coord_cartesian(xlim = xlim)

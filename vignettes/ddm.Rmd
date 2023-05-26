@@ -60,7 +60,7 @@ In this example, we are going to simulate data for 4 conditions with *known* par
 
 ### Data
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, fig.width=12, fig.height=12}
 sim <- ddm_data(n = c(200, 200, 200, 200),
                 drift = c(-1, 0, 1, 2),
                 bs = 1,

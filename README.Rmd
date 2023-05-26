@@ -12,17 +12,37 @@ editor_options:
 
 ```{r setup, echo = FALSE, warning=FALSE, message=FALSE}
 options(digits = 3)
+
 library(easyRT)
+library(tidyverse)
+library(patchwork)
 
 knitr::opts_chunk$set(
   collapse = TRUE,
   dpi = 450,
   fig.path = "man/figures/"
 )
-
-set.seed(111)
 ```
 
+```{r echo=FALSE, fig.height=5, fig.width=8, message=FALSE, warning=FALSE, dpi=600}
+set.seed(3)
+
+sim <- ddm_data(n=2000, drift = c(0, 1.3), bs = 1, bias = c(0.4, 0.6), ndt = c(0.15, 0.2), n_traces = 5, ndt_var=0) 
+
+sim$data <- mutate(sim$data, condition = fct_recode(condition, "Speed" = "1", "Accuracy" = "2"))
+sim$traces <- mutate(sim$traces, condition = fct_recode(condition, "Speed" = "1", "Accuracy" = "2"))
+sim$density <- mutate(sim$density, condition = fct_recode(condition, "Speed" = "1", "Accuracy" = "2"))
+
+
+(ddm_plot_upper(sim$data, breaks = 150, density = sim$density, xlim = c(0, 1)) +
+  scale_color_manual(values = c("#3949AB", "#FF5722")) +
+  scale_fill_manual(values = c("#3949AB", "#FF5722"))) /
+(ddm_plot_traces(sim$traces, trace_alpha = 1, trace_linewidth = 0.2, xlim = c(0, 1)) +
+  scale_color_manual(values = c("#3949AB", "#FF5722"))) /
+(ddm_plot_lower(sim$data, breaks = 150, density = sim$density, xlim = c(0, 1)) +
+  scale_color_manual(values = c("#3949AB", "#FF5722")) +
+  scale_fill_manual(values = c("#3949AB", "#FF5722")))
+```
 
 ## Motivation 
 
@@ -31,7 +51,7 @@ This repo started as my attempt at understanding and implementing sequential mod
 
 ## Content
 
-Reaction time (RTs) have been traditionally modelled using traditional linear models (e.g., ANOVAs). However, it is problematic because RTs are **not** normally distributed. A popular mitigation method is to **transform** the data (e.g., usinga log-transform), but it is **not a good idea** ([Schramm & Rouder, 2019](https://doi.org/10.31234/osf.io/9ksa6)). Instead, one should use statistical models that **describe** or **generate** RT-like data.
+Reaction time (RTs) have been traditionally modelled using traditional linear models (e.g., ANOVAs). However, it is problematic because RTs are **not** normally distributed. A popular mitigation method is to **transform** the data (e.g., by log-transform), but it is **not a good idea** ([Schramm & Rouder, 2019](https://doi.org/10.31234/osf.io/9ksa6)). Instead, one should use statistical models that **describe** or **generate** RT-like data.
 
 You should start by reading:
 
@@ -40,8 +60,11 @@ You should start by reading:
 
 This repository contain the following vignettes:
 
-- DDMs
-- Ex-Gaussian
+- [**Drift Diffusion Model (DDM) in R: A Tutorial**](https://dominiquemakowski.github.io/easyRT/articles/ddm.html)
+- [**Ex-Gaussian models in R: A Tutorial**](https://dominiquemakowski.github.io/easyRT/articles/exgaussian.html)
+
+*Note: these are work-in-progress. Please get in touch if you want to contribute and help, it's a good way of learning.*
+
 
 ## Installation
 
@@ -53,13 +76,11 @@ library(easyRT)
 
 ## What does this package do?
 
-Not much. It is mostly about its vignettes, but it also implement some convenience function to generate and plot drift diffusion models.
+Not much. It is mostly about its vignettes, but it also has some convenience functions to generate and plot drift diffusion models. We'll see how it evolves over time.
 
-```{r warning=FALSE, message=FALSE}
-sim <- ddm_data(drift = 1, bs = 1, bias = 0.5, ndt = 0.2)
+```{r warning=FALSE, message=FALSE, fig.width=11, fig.height=11, dpi=450}
+sim <- ddm_data(drift = c(0, 1), bs = 1, bias = 0.5, ndt = 0.2)
 
 ddm_plot(sim)
-```
-
 ```
 

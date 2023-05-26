@@ -1,73 +1,66 @@
 
-# driftR
+# easyRT
 
-*Tools and examples for fitting (Hierarchical) Drift Diffusion Models in
-R*
+*Tools and examples for modelling Reaction Times in R*
+
+**\[WORK IN PROGRESS\]**
+
+![](man/figures/unnamed-chunk-1-1.png)<!-- -->
 
 ## Motivation
 
-This repo is my attempt at understanding and implementing sequential
-models, starting with DDMs for reaction times in R. **Please don’t
-hesitate** to open an issue to discuss and suggest things that could be
-improved or clarified.
+This repo started as my attempt at understanding and implementing
+sequential models, starting with (Hierarchical) Drift Diffusion Models
+(DDMs) for reaction times in R. **Please don’t hesitate** to open an
+issue to discuss and suggest things that could be improved or clarified.
 
-I tried to use HDDM and PyDDM in Python, and had a look at R
-alternatives, but I didn’t find any solution that was easy to use
-out-of-the-box.
+## Content
 
-This wouldn’t have been possible without this blogpost
-<http://singmann.org/wiener-model-analysis-with-brms-part-i/>
+Reaction time (RTs) have been traditionally modelled using traditional
+linear models (e.g., ANOVAs). However, it is problematic because RTs are
+**not** normally distributed. A popular mitigation method is to
+**transform** the data (e.g., by log-transform), but it is **not a good
+idea** ([Schramm & Rouder,
+2019](https://doi.org/10.31234/osf.io/9ksa6)). Instead, one should use
+statistical models that **describe** or **generate** RT-like data.
 
-## Theory
+You should start by reading:
 
-![Something](man/figures/wiener_example.webp)
+- [**Lindelov’s overview of RT
+  models**](https://lindeloev.github.io/shiny-rt/): An absolute
+  must-read.
+- [**De Boeck & Jeon
+  (2019)**](https://www.frontiersin.org/articles/10.3389/fpsyg.2019.00102/full):
+  A paper providing an overview of RT models.
 
-*A graphical illustration of the Wiener diffusion model for two-choice
-reaction times. An evidence counter starts at value $\alpha*\beta$ and
-evolves with random increments. The mean increment is $\delta$ . The
-process terminates as soon as the accrued evidence exceeds $\alpha$ or
-deceeds 0. The decision process starts at time $\tau$ from the stimulus
-presentation and terminates at the reaction time. \[This figure and
-caption are taken from Wabersich and Vandekerckhove (2014, The R
-Journal, CC-BY license).\]*
+This repository contain the following vignettes:
 
-DDms are based on Wiener distributions that contain several parameters:
+- [**Drift Diffusion Model (DDM) in R: A
+  Tutorial**](https://dominiquemakowski.github.io/easyRT/articles/ddm.html)
+- [**Ex-Gaussian models in R: A
+  Tutorial**](https://dominiquemakowski.github.io/easyRT/articles/exgaussian.html)
 
-- The **drift** rate (delta $\delta$) is the average slope of the
-  accumulation process towards the boundaries. The larger the (absolute
-  value of the) drift rate, the stronger the evidence for the
-  corresponding response option.
-- The **boundary** separation (alpha $\alpha$) is the distance between
-  the two decision bounds and interpreted as a measure of response
-  caution.
-- The starting point (beta $\beta$) of the accumulation process is a
-  measure of response **bias** towards one of the two response
-  boundaries.
-- The **non-decision time** (tau $\tau$) captures all non-decisional
-  process such as stimulus encoding and response processes.
+*Note: these are work-in-progress. Please get in touch if you want to
+contribute and help, it’s a good way of learning.*
 
-## Data
+## Installation
 
 ``` r
-library(tidyverse)
-library(driftR)
+remotes::install_github("DominiqueMakowski/easyRT")
 
-data <- ddm_data(n = c(200, 200),
-                 drift = c(0, 2),
-                 boundary = 1,
-                 bias = 0.5,
-                 ndt = 0.2)
-
-head(data$data)
-##      rt response condition
-## 1 0.338    upper         1
-## 2 0.423    upper         1
-## 3 0.360    lower         1
-## 4 0.275    upper         1
-## 5 0.356    lower         1
-## 6 0.332    lower         1
+library(easyRT)
 ```
+
+## What does this package do?
+
+Not much. It is mostly about its vignettes, but it also has some
+convenience functions to generate and plot drift diffusion models. We’ll
+see how it evolves over time.
 
 ``` r
-ddm_plot(data$data, density = data$density)
+sim <- ddm_data(drift = c(0, 1), bs = 1, bias = 0.5, ndt = 0.2)
+
+ddm_plot(sim)
 ```
+
+![](man/figures/unnamed-chunk-3-1.png)<!-- -->
