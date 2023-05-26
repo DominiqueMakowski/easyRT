@@ -78,7 +78,7 @@ library(easyRT)
 
 Not much. It is mostly about its vignettes, but it also has some convenience functions to generate and plot drift diffusion models. We'll see how it evolves over time.
 
-```{r warning=FALSE, message=FALSE, fig.width=11, fig.height=11, dpi=450}
+```{r warning=FALSE, message=FALSE, fig.width=5, fig.height=8, dpi=450}
 sim <- ddm_data(drift = c(0, 1), bs = 1, bias = 0.5, ndt = 0.2)
 
 ddm_plot(sim)

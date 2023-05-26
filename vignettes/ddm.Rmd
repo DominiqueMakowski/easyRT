@@ -60,7 +60,7 @@ In this example, we are going to simulate data for 4 conditions with *known* par
 
 ### Data
 
-```{r warning=FALSE, message=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=8, dpi=600}
 sim <- ddm_data(n = c(200, 200, 200, 200),
                 drift = c(-1, 0, 1, 2),
                 bs = 1,
@@ -124,7 +124,7 @@ family <- wiener(link_bs = "identity",
 ### Priors
 
 - **b**: Our priors on the effect of conditions on the drift rate are centred around 0 and give enough probability mass to plausible values (the typical range for drift being [-5, 5]). A student distribution has fatter tails than a Gaussian one, dealing better with outliers (a Cauchy distribution would also be a good alternative). 
-- **ndt**: Our priors on the non-decision time is a *gamma* distribution, that naturally excludes 0. We set it slightly skewed to the left, so that most of the mass covers the 0 - 0.5 s (we don't expect non-decision processes to take more than 0.5 s). Note that we have to specify the upper bound (ub) as empty to overwrite the default value.
+- **ndt**: Our priors on the non-decision time is a *gamma* distribution, that naturally excludes 0. We set it slightly skewed to the left, so that most of the mass covers the 0 - 0.5 s (we don't expect non-decision processes to take more than 0.5 s). Note that there is an upper bound set at the minimum RT value.
 - **bs**: Our priors on the boundary separation is a wider *gamma* distribution (excluding 0), with a likelihood peaking around 1.
 - **bias**: Our priors is a *beta* distribution (naturally bounded at $]0, 1[$) centered around 0.5.
 
@@ -215,7 +215,7 @@ df$Predicted <- as.numeric(get_predicted(m, predict = "prediction", iterations =
 ddm_plot(mutate(df, rt = Predicted), density = sim$density) 
 ```
 
-*Note: I am not sure why the predictions (gotten with `get_predicted()`) are so off...*
+*Note: I am not sure why the predictions (got with `get_predicted()`) are so off...*
 
 
 ## Better Model
