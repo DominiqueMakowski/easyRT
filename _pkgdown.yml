@@ -1,0 +1,12 @@
+url: ~
+template:
+    bootstrap: 5
+
+navbar:
+    left:
+        - text: Functions
+          href: reference/index.html
+        - text: "DDMs"
+          href: articles/ddm.html
+        - text: "Ex-Gaussian"
+          href: articles/exgaussian.html

@@ -1,0 +1,81 @@
+---
+title: "Ex-Gaussian models in R: A Tutorial"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Ex-Gaussian models in R: A Tutorial}
+editor_options: 
+  chunk_output_type: console
+bibliography: bibliography.bib
+---
+
+
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+set.seed(111)
+```
+
+## Setup
+
+If you haven't, install the **easyRT** package by running:
+
+```{r eval=FALSE}
+remotes::install_github("DominiqueMakowski/easyRT")
+```
+
+Load the necessary packages.
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(easystats)
+library(rtdists)
+library(easyRT)
+```
+
+
+## Theory
+
+
+Rather than relying on default model families, such as Gaussian models, one can select [models that accurately represents the distribution of their outcome variable](https://lindeloev.github.io/shiny-rt/). For instance, models based on **Exponentially modified Gaussian** (ex-Gaussian) distributions, which are suited to their typical skewed shape [@balota2011moving; @matzke2009psychological].
+
+This distribution is a convolution of normal and exponential distributions and has three parameters, namely $\mu$ (mu) and $\sigma$ (sigma) - the mean and standard deviation of the Gaussian distribution - and $\tau$ (tau) - the exponential component of the distribution. Intuitively, these arguments reflect the centrality, the width and the tail dominance, respectively (see figure below).
+
+Beyond the descriptive value of these types of models, some have tried to interpret their parameters in terms of cognitive mechanisms, arguing for instance that changes in the Gaussian components reflect changes in attentional processes (e.g., "the time required for organization and execution of the motor response"; Hohle, 1965), whereas changes in the exponential component reflect changes in intentional (i.e., decision-related) processes [@kieffaber2006switch]. However, @matzke2009psychological demonstrate that there is no direct correspondence between ex-Gaussian parameters and cognitive mechanisms, and underline their value primarily as descriptive tools, rather than models of cognition *per se*.
+
+Descriptively, the three parameters can be interpreted as:
+
+- **Mu** $\mu$: The location / centrality of the RTs. Would correspond to the mean in a symmetrical distribution.
+- **Sigma** $\sigma$: The variability and dispersion of the RTs. Akin to the standard deviation in normal distributions.
+- **Tau** $\tau$: Tail weight / skewness of the distribution. 
+
+Note that these parameters are not independent with respect to distribution characteristics: below is an example of different distributions with the **same location and dispersion**. Although only the tail weight parameter is changed, the whole dsitribution appears to shift is centre of mass. **Hence, one should be careful note to interpret the values of mu directly as the "mean" or the distribution "peak" and sigma as the SD or the "width"**.
+
+```{r distribution-example-plot, echo=FALSE, fig.cap="*Example of Ex-gaussian Distributions with same location and dispersion.*", warning=FALSE, message=FALSE, cache = TRUE}
+# Helper to visualize distributions
+data <- data.frame(RT = seq(from = 0, to = 3, length.out = 1000))
+for(beta in c(0.001, 0.1, 0.2, 0.3, 0.4, 0.5)) {
+  data[[paste0("beta_", beta)]] <- brms::dexgaussian(data$RT, mu = 0.7, sigma = 0.2, beta = beta)
+}
+
+data |> 
+  tidyr::pivot_longer(-RT, names_to = "Parameters") |> 
+  ggplot(aes(x = RT)) +
+  geom_line(aes(y = value, color = Parameters), linewidth = 1) +
+  geom_vline(xintercept = 0.7, linetype = "dashed") +
+  see::scale_color_material_d(palette = "rainbow", labels = c(
+    "beta_0.001" = expression(paste(mu, " = 0.7, ", sigma, " = 0.2, ", tau %~~% 0)),
+    "beta_0.1" = expression(paste(mu, " = 0.7, ", sigma, " = 0.2, ", tau, " = 0.1")),
+    "beta_0.2" = expression(paste(mu, " = 0.7, ", sigma, " = 0.2, ", tau, " = 0.2")),
+    "beta_0.3" = expression(paste(mu, " = 0.7, ", sigma, " = 0.2, ", tau, " = 0.3")),
+    "beta_0.4" = expression(paste(mu, " = 0.7, ", sigma, " = 0.2, ", tau, " = 0.4")),
+    "beta_0.5" = expression(paste(mu, " = 0.7, ", sigma, " = 0.2, ", tau, " = 0.5"))
+    )) +
+  theme_minimal() +
+  theme(axis.text.y = element_blank()) +
+  labs(color = "Ex-Gaussian Parameters", x = "Reaction Time (s)", y = "Distribution") +
+  coord_cartesian(xlim = c(0, 2.5)) +
+  scale_y_continuous(expand = c(0, 0)) 
+```
+
